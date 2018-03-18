@@ -359,7 +359,7 @@ Breakpoint 1, 0x00007c01 in ?? ()
 
 断点正常。
 
-#### 练习3：分析bootloader进入保护模式的过程
+### 练习3：分析bootloader进入保护模式的过程
 
 1 启动预备：关闭中断；将标志寄存器flag的方向标志位DF清零， 在字串操作中使变址寄存器SI或DI的地址指针自动增加，字串处理由前往后。
 
@@ -451,7 +451,7 @@ Breakpoint 1, 0x00007c01 in ?? ()
 	call bootmain
 ```
 
-#### 练习4：分析bootloader加载ELF格式的OS的过程
+### 练习4：分析bootloader加载ELF格式的OS的过程
 
 - waitdisk函数：等待磁盘控制器就绪。
 
@@ -581,7 +581,7 @@ bad:
 }
 ```
 
-#### 练习5：实现函数调用堆栈跟踪函数
+### 练习5：实现函数调用堆栈跟踪函数
 
 编写print\_stackframe函数如下，ebp指向的堆栈位置储存着caller的ebp，以此为线索可以得到所有使用堆栈的函数ebp，ebp+4指向caller调用时的eip，ebp+8等是可能的参数。英文注释已经写得非常清楚，按照其实现即可：
 
@@ -648,7 +648,7 @@ ebp:0x00007bf8 eip:0x00007d6f args:0xc031fcfa 0xc08ed88e 0x64e4d08e 0xfa7502a8
 - eip=0x00007d6f : 为bootmain的返回地址，对应bootblock.asm中的outw(0x8A00, 0x8A00)，查看其地址发现一致。
 - args=0xc031fcfa 0xc08ed88e 0x64e4d08e 0xfa7502a8 : bootmain函数无参数，故输出为调用bootmain之前，栈顶的四个数值，故输出的四个数值位于0x7c00~0x7c0f，与obj/bootblock.asm代码一致。
 
-#### 练习6：完善中断初始化和处理
+### 练习6：完善中断初始化和处理
 
 ##### [练习6.1] 中断描述符表（也可简称为保护模式下的中断向量表）中一个表项占多少字节？其中哪几位代表中断处理代码的入口？
 
