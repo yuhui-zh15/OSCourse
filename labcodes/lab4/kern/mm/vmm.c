@@ -367,7 +367,7 @@ do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
         goto failed;
     }
     if (*ptep == 0) {
-        pgdir_alloc_page(mm->pgdir, addr, perm);
+        if (pgdir_alloc_page(mm->pgdir, addr, perm) == NULL) goto failed;
     }
     else {
         if (swap_init_ok) {
