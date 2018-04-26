@@ -264,7 +264,7 @@ ucore每个新fork的线程都有唯一id，注意代码中`local_intr_save`到`
 
 ucore在实验四中实现了一个最简单的FIFO调度器，一共有2个线程，线程切换的调用顺序是schedule()->proc\_run()->switch\_to()函数，依次进行剖析。
 
-县城调度其核心是schedule函数。
+线程调度其核心是schedule函数。
 
 ##### schedule函数定义如下：
 
