@@ -427,6 +427,56 @@ proc_stride_comp_f(void *a, void *b)
 
 故对32位整数，$stride_{big}<=2^{31}-1=0x7FFFFFFF$
 
+## 扩展练习
+
+本次实验笔者在ucore的调度器框架下实现了Linux的CFS调度算法。
+
+### 设计：
+
+CFS即完全公平调度算法，根据资料，CFS的原理可以大致总结如下：
+
+CFS定义了一种新的模型，它给cfs_rq（cfs的run queue）中的每一个进程安排一个虚拟时钟，vruntime。如果一个进程得以执行，随着时间的增长（也就是一个个tick的到来），其vruntime将不断增大。没有得到执行的进程vruntime不变。
+
+而调度器总是选择vruntime跑得最慢的那个进程来执行。这就是所谓的“完全公平”。为了区别不同优先级的进程，优先级高的进程vruntime增长得慢，以至于它可能得到更多的运行机会。
+
+仔细理解发现vruntime的定义和stride几乎一样！而priority也已经定义，因此可以直接通过修改pick\_next实现。
+
+### 实现：
+
+其余函数和stride调度算法相同，仅需添加宏NICE\_0_LOAD并重新实现pick\_next函数。
+
+```c
+#define NICE_0_LOAD 1024
+static struct proc_struct *
+cfs_pick_next(struct run_queue *rq) {
+	if (rq->lab6_run_pool == NULL) return NULL;
+	struct proc_struct* min_proc = le2proc(rq->lab6_run_pool, lab6_run_pool);
+	if (min_proc->lab6_priority == 0) {
+		min_proc->lab6_stride += NICE_0_LOAD;
+	} else if (min_proc->lab6_priority > NICE_0_LOAD) {
+		min_proc->lab6_stride += 1;
+	} else {
+		min_proc->lab6_stride += NICE_0_LOAD / min_proc->lab6_priority;
+	}
+	return min_proc;
+}
+```
+
+### 测试：
+
+默认仍然使用的是Stride调度算法，如果您需要对CFS调度算法进行测试，请对以下代码修改：
+
+```c
+
+struct sched_class cfs_sched_class = {
+     ...
+     .pick_next = cfs_pick_next,
+     ...
+};
+```
+
+至此，我们便实现实现了CFS调度算法。
+
 ## 总结
 
 ### 与参考答案区别：

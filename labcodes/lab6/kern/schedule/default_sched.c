@@ -5,6 +5,7 @@
 #include <default_sched.h>
 
 #define USE_SKEW_HEAP 1
+#define NICE_0_LOAD 1024
 
 /* You should define the BigStride constant here*/
 /* LAB6: 2015011372 */
@@ -151,6 +152,21 @@ stride_pick_next(struct run_queue *rq) {
     return proc;
 }
 
+// [CHALLENGE] CFS
+static struct proc_struct *
+cfs_pick_next(struct run_queue *rq) {
+  if (rq->lab6_run_pool == NULL) return NULL;
+  struct proc_struct* min_proc = le2proc(rq->lab6_run_pool, lab6_run_pool);
+  if (min_proc->lab6_priority == 0) {
+    min_proc->lab6_stride += NICE_0_LOAD;
+  } else if (min_proc->lab6_priority > NICE_0_LOAD) {
+    min_proc->lab6_stride += 1;
+  } else {
+    min_proc->lab6_stride += NICE_0_LOAD / min_proc->lab6_priority;
+  }
+  return min_proc;
+}
+
 /*
  * stride_proc_tick works with the tick event of current process. You
  * should check whether the time slices for current process is
@@ -176,5 +192,6 @@ struct sched_class default_sched_class = {
      .enqueue = stride_enqueue,
      .dequeue = stride_dequeue,
      .pick_next = stride_pick_next,
+     //.pick_next = cfs_pick_next,
      .proc_tick = stride_proc_tick,
 };
